@@ -10,6 +10,7 @@ class Field
     private $fieldlabel;
     private $uitype;
     private $fieldtype;
+    private $data = [];
 
     public function __construct($fieldname, $fieldtype = null)
     {
@@ -29,6 +30,11 @@ class Field
         $this->fieldtype = $fieldtype;
     }
 
+    public function set($key, $value) {
+        $this->data[$key] = $value;
+    }
+
+
     /** Getters **/
 
     public function getFieldname() {
@@ -45,5 +51,13 @@ class Field
 
     public function getFieldtype() {
         return $this->fieldtype;
+    }
+
+    public function get($key, $default = null) {
+        if(array_key_exists($key, $this->data)) {
+            return $this->data[$key];
+        }
+
+        return $default;
     }
 }

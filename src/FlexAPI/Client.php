@@ -1,6 +1,7 @@
 <?php
 namespace FlexAPI;
 
+use FlexAPI\Exception\LoginException;
 use FlexAPI\Manager\ActionsManager;
 use FlexAPI\Manager\ActivityStreamManager;
 use FlexAPI\Manager\CloudFileManager;
@@ -24,11 +25,29 @@ class Client
     private $_Request = null;
 
     /**
+     * @var Client
+     */
+    private static $instance = null;
+
+    public static function connect($vtigerURL) {
+        self::$instance = new self($vtigerURL);
+
+        return self::$instance;
+    }
+
+    /**
+     * @return Client
+     */
+    public static function getInstance() {
+        return self::$instance;
+    }
+
+    /**
      * Client constructor.
      *
      * @param $VtigerURL
      */
-    public function __construct($VtigerURL) {
+    private function __construct($VtigerURL) {
         $this->_Request = new Request($VtigerURL);
     }
 
@@ -42,16 +61,22 @@ class Client
         var_dump($response);
     }
 
+    /**
+     * @param $username
+     * @param $password
+     * @throws LoginException
+     */
     public function login($username, $password) {
         $response = $this->_Request->post('login/login', array('username' => $username, 'password' => $password));
 
         if(isset($response['token'])) {
-            var_dump($response['token']);
             $this->setLogintoken($response['token']);
+        } else {
+            throw new LoginException();
         }
     }
 
-    public function offline_token($token) {
+    public function create_offline_token($token) {
         $this->_Request->get('login/offline_token', array('token' => $token));
     }
 
@@ -62,81 +87,4 @@ class Client
         return $this->_Request;
     }
 
-    /**
-     * @return ModuleManager
-     */
-    public function modules() {
-        return new ModuleManager($this);
-    }
-
-    /**
-     * @return MenuManager
-     */
-    public function menu() {
-        return new MenuManager($this);
-    }
-    /**
-     * @return SearchManager
-     */
-    public function search() {
-        return new SearchManager($this);
-    }
-    /**
-     * @return ActionsManager
-     */
-    public function actions() {
-        return new ActionsManager($this);
-    }
-
-    /**
-     * @return CloudFileManager
-     */
-    public function cloudfile() {
-        return new CloudFileManager($this);
-    }
-
-    /**
-     * @return ActivityStreamManager
-     */
-    public function activitystream() {
-        return new ActivityStreamManager($this);
-    }
-    /**
-     * @return CustomerportalManager
-     */
-    public function customerportal() {
-        return new CustomerportalManager($this);
-    }
-    /**
-     * @return HomeManager
-     */
-    public function home() {
-        return new HomeManager($this);
-    }
-    /**
-     * @return ExportManager
-     */
-    public function exports() {
-        return new ExportManager($this);
-    }
-    /**
-     * @return ListingManager
-     */
-    public function listing() {
-        return new ListingManager($this);
-    }
-
-    /**
-     * @return RecordManager
-     */
-    public function records() {
-        return new RecordManager($this);
-    }
-
-    /**
-     * @return FieldManager
-     */
-    public function fields() {
-        return new FieldManager($this);
-    }
 }
