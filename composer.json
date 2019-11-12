@@ -1,0 +1,19 @@
+{
+    "name": "redoo-networks/flexapi-client-php",
+    "description": "FlexAPI Client Library",
+    "authors": [
+        {
+            "name": "Redoo Networks GmbH",
+            "email": "info@redoo-networks.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=7.1.0"
+    },
+    "autoload": {
+        "psr-0": {
+            "FlexAPI": "src/"
+        }
+    }
+}
