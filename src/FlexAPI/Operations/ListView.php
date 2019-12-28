@@ -65,6 +65,10 @@ class ListView
 
         $response = Client::getInstance()->request()->get('listing/list/'.$this->module->getModuleName(), $options);
 
+        if(!is_array($response)) {
+            throw new \Exception($response);
+        }
+
         $listViewModel = new \FlexAPI\Model\ListView($this);
 
         /** @var Field[] $fields */
