@@ -4,6 +4,7 @@
 namespace FlexAPI\Operations;
 
 
+use FlexAPI\Client;
 use FlexAPI\Model\Field;
 use FlexAPI\Model\Interfaces\Condition;
 use FlexAPI\Model\Module;
@@ -62,7 +63,11 @@ class ListView
         if(!empty($this->orderby)) $options['orderby'] = $this->orderby;
         if(!empty($this->sortorder)) $options['sortorder'] = $this->sortorder;
 
-        $response = \FlexxCustomerportal\Controller::getAPIClient()->request()->get('listing/list/'.$this->module->getModuleName(), $options);
+        $response = Client::getInstance()->request()->get('listing/list/'.$this->module->getModuleName(), $options);
+
+        if(!is_array($response)) {
+            throw new \Exception($response);
+        }
 
         $listViewModel = new \FlexAPI\Model\ListView($this);
 

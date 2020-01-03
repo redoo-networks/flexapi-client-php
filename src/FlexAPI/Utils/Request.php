@@ -7,6 +7,9 @@ class Request
     private $DEBUG = false;
     private $_LoginToken = null;
 
+    private $customerToken = null;
+    private $customerMode = false;
+
     public function __construct($VtigerURL) {
         $this->_VtigerURL = trim($VtigerURL, '/').'/modules/FlexAPI/api.php';
     }
@@ -22,6 +25,11 @@ class Request
         return $this->request('GET', $action, $params, $directReturn);
     }
 
+    public function enableCustomerMode($token) {
+        $this->customerMode = true;
+        $this->customerToken = $token;
+    }
+
     public function request($method, $action, $params = array(), $directReturn = false) {
         $curl = curl_init();
 
@@ -30,6 +38,11 @@ class Request
         $args['params'] = $params;
         $args['method'] = $method;
         $args['action'] = $action;
+
+        if($this->customerMode === true) {
+            $args['customer-mode'] = true;
+            $args['customer-token'] = $this->customerToken;
+        }
 
         if(!empty($this->_LoginToken)) {
             $args['user-token'] = sha1($this->_LoginToken);

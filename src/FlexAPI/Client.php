@@ -76,6 +76,24 @@ class Client
         }
     }
 
+    public function enableCustomerMode($customerToken) {
+        $this->_Request->enableCustomerMode($customerToken);
+    }
+
+    public function loginCustomer($usernameEmail, $password) {
+
+        $response = $this->_Request->post(
+            'customerportal/login',
+            array(
+                'email' => $usernameEmail,
+                'password' => $password
+            )
+        );
+
+        var_dump($response);
+
+    }
+
     public function create_offline_token($token) {
         $this->_Request->get('login/offline_token', array('token' => $token));
     }
@@ -85,6 +103,14 @@ class Client
      */
     public function request() {
         return $this->_Request;
+    }
+
+    public function restrictContactsMode($contactId) {
+        $this->_Request->setViewMode('Contacts', $contactId);
+    }
+
+    public function restrictAccountsMode($accountId) {
+        $this->_Request->setViewMode('Accounts', $accountId);
     }
 
 }
