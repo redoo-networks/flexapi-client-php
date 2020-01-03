@@ -4,7 +4,7 @@ namespace FlexAPI\Utils;
 class Request
 {
     private $_VtigerURL = array();
-    private $DEBUG = false;
+    private $DEBUG = true;
     private $_LoginToken = null;
 
     private $customerToken = null;
@@ -85,7 +85,7 @@ class Request
             echo '<pre>';
             var_dump('URL: '.$this->_VtigerURL);
             var_dump('Action: '.strtoupper($method).' ' . $action);
-            var_dump('Parameters: ', $params);
+            var_dump('Post Body: ', $args);
             echo 'Response:'.PHP_EOL;
             var_dump($content);
 
