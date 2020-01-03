@@ -90,8 +90,7 @@ class Client
             )
         );
 
-        var_dump($response);
-
+        return $response['hash'];
     }
 
     public function create_offline_token($token) {
