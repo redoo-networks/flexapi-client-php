@@ -90,7 +90,21 @@ class Client
             )
         );
 
-        return $response['hash'];
+        return $response['token'];
+    }
+
+    public function loginCustomerByKey($usernameEmail, $customerKey) {
+
+        $response = $this->_Request->post(
+            'customerportal/login',
+            array(
+                'email' => $usernameEmail,
+                'key' => $customerKey
+            )
+        );
+        var_dump($response);
+
+        return $response['token'];
     }
 
     public function create_offline_token($token) {

@@ -1,7 +1,7 @@
 <?php
 namespace FlexAPI\Model;
 
-use FlexxCustomerportal\Controller;
+use FlexAPI\Client;
 
 class Record
 {
@@ -36,7 +36,7 @@ class Record
      */
     public function getData() {
         if(empty($this->data)) {
-            $this->data = Controller::getAPIClient()->request()->get('records/' . $this->module->getModuleName() . '/' . $this->crmid);
+            $this->data = Client::getInstance()->request()->get('records/' . $this->module->getModuleName() . '/' . $this->crmid);
         }
 
         return $this->data;
@@ -65,7 +65,7 @@ class Record
     }
 
     public function getComments($onlyPublic = false) {
-        $response = Controller::getAPIClient()->request()->
+        $response = Client::getInstance()->request()->
                 get('records/comments/' . $this->module->getModuleName() . '/' . $this->crmid . ($onlyPublic ? '/public' : ''), array());
 
         $result = array();
@@ -81,7 +81,7 @@ class Record
     }
 
     public function createComment($commentcontent) {
-        Controller::getAPIClient()->request()->
+        Client::getInstance()->request()->
                 post('records/' . $this->crmid . '/comments', array(
                     'comment' => $commentcontent
         ));

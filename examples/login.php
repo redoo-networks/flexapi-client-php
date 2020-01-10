@@ -2,14 +2,18 @@
 ini_set('display_errors', 1);
 error_reporting(-1);
 
+require_once('./config.php');
 require_once('../vendor/autoload.php');
 
-//$client = \FlexAPI\Client::connect('https://swarnat-test.redoo.cloud/');
-//$client = \FlexAPI\Client::connect('http://192.168.11.131/vtiger/dev_env/vtigercrm-weekplaner/');
-$client = \FlexAPI\Client::connect('http://192.168.11.131/vtiger/dev_env/vtigercrm-flexxapi/');
+$client = \FlexAPI\Client::connect(API_HOSTNAME);
 
 try {
-    $client->login('admin', 'admin');
+    if(defined('LOGINTOKEN')) {
+        $client->setLogintoken(LOGINTOKEN);
+    } else {
+        $client->login(API_USERNAME, API_PASSWORD);
+        echo '<p>Usertoken: '.$client->request()->getLogintoken().'</p>';
+    }
 } catch (\Exception $exp) {
     echo 'Wrong login';
 }

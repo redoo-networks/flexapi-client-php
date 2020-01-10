@@ -14,6 +14,9 @@ class Request
         $this->_VtigerURL = trim($VtigerURL, '/').'/modules/FlexAPI/api.php';
     }
 
+    public function getLogintoken() {
+        return $this->_LoginToken;
+    }
     public function setLogintoken($token) {
         $this->_LoginToken = $token;
     }

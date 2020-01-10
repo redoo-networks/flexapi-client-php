@@ -1,5 +1,5 @@
 <?php
-namespace FlexAPI\Model\Base;
+namespace FlexAPI\Model;
 
 use FlexAPI\Model\Condition\Group;
 

@@ -9,8 +9,9 @@ use FlexAPI\Model\Field;
 use FlexAPI\Model\Interfaces\Condition;
 use FlexAPI\Model\Module;
 use FlexAPI\Model\Record;
+use FlexAPI\Operations\Interfaces\Search;
 
-class AdvancedSearch
+class AdvancedSearch implements Search
 {
     private $module;
     private $pagesize = 25;
@@ -22,6 +23,7 @@ class AdvancedSearch
      */
     private $condition = null;
     private $orderBy = null;
+    private $sortOrder = null;
 
     public function __construct(Module $module)
     {
@@ -44,52 +46,51 @@ class AdvancedSearch
         $this->condition = $condition;
     }
 
-    public function setOrderByField($field) {
+    public function setOrderByField($field, $direction) {
         $this->orderBy = $field;
-    }
 
-    public function setOrderDirection($direction) {
         $direction = strtolower($direction);
 
         $this->sortOrder = ($direction === 'desc' ? 'desc' : 'asc');
+
     }
 
+    /**
+     * @return \FlexAPI\Model\SearchResult
+     * @throws \Exception
+     */
     public function run() {
         $options = [];
-        if(!empty($this->pagesize)) $options['limit'] = $this->pagesize;
-        if(!empty($this->page)) $options['page'] = $this->page;
+        if(!empty($this->pagesize)) {
+            $options['limit'] = $this->pagesize;
+        } else {
+            $options['limit'] = 30;
+        }
+
+        $options['module'] = $this->module->getModuleName();
+
+        if(!empty($this->page)) $options['offset'] = ($this->page - 1) * $options['limit'];
         if(!empty($this->fields)) $options['fields'] = $this->fields;
         if(!empty($this->condition)) $options['condition'] = $this->condition->getConditionsForApi();
-        if(!empty($this->orderby)) $options['orderby'] = $this->orderby;
-        if(!empty($this->sortorder)) $options['sortorder'] = $this->sortorder;
+        if(!empty($this->orderby)) $options['orderby'] = array($this->orderby => $this->sortOrder);
 
-        $response = Client::getInstance()->request()->get('listing/list/'.$this->module->getModuleName(), $options);
+        $response = Client::getInstance()->request()->get('search/complexe', $options);
 
         if(!is_array($response)) {
             throw new \Exception($response);
         }
 
-        $listViewModel = new \FlexAPI\Model\ListView($this);
+        $resultModel = new \FlexAPI\Model\SearchResult($this);
 
-        /** @var Field[] $fields */
-        $fields = [];
-        foreach($response['headers'] as $header) {
-            $field = new Field($header['fieldname'], $header['fieldtype']);
-            $field->setLabel($header['fieldlabel']);
-            $field->setUIType($header['uitype']);
-
-            $fields[] = $field;
-        }
-
-        $listViewModel->setFields($fields);
+        $resultModel->setTotalCount($response['total']);
 
         foreach($response['entries'] as $crmid => $entry) {
             $record = new Record($this->module, $crmid);
             $record->initData($entry);
 
-            $listViewModel->addRecord($record);
+            $resultModel->addRecord($record);
         }
 
-        return $listViewModel;
+        return $resultModel;
     }
 }
