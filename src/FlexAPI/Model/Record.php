@@ -8,19 +8,35 @@ class Record
     /**
      * @var Module
      */
-    private $module;
+    protected $module;
 
     /**
      * @var int
      */
-    private $crmid;
+    protected $crmid;
 
-    private $data = [];
+    protected $data = [];
+
+    protected $accessBridgeId = null;
 
     public function __construct(Module $module, $crmid)
     {
         $this->module = $module;
-        $this->crmid = intval($crmid);
+
+        if(is_numeric($crmid) === false) {
+            $crmid = trim($crmid);
+
+            if(preg_match('/^[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}$/', $crmid)) {
+                $this->crmid = $crmid;
+            }
+        } else {
+            $this->crmid = intval($crmid);
+        }
+
+    }
+
+    public function getId() {
+        return $this->crmid;
     }
 
     public function initData($data) {
@@ -36,7 +52,15 @@ class Record
      */
     public function getData() {
         if(empty($this->data)) {
-            $this->data = Client::getInstance()->request()->get('records/' . $this->module->getModuleName() . '/' . $this->crmid);
+            $params = array();
+            if(!empty($this->accessBridgeId)) {
+                $params['accessBridgeCrmId'] = $this->accessBridgeId;
+            }
+
+            $this->data = Client::getInstance()->request()->get(
+                'records/' . $this->module->getModuleName() . '/' . $this->crmid,
+                $params
+            );
         }
 
         return $this->data;
@@ -66,7 +90,7 @@ class Record
 
     public function getComments($onlyPublic = false) {
         $response = Client::getInstance()->request()->
-                get('records/comments/' . $this->module->getModuleName() . '/' . $this->crmid . ($onlyPublic ? '/public' : ''), array());
+        get('records/comments/' . $this->module->getModuleName() . '/' . $this->crmid . ($onlyPublic ? '/public' : ''), array());
 
         $result = array();
         $commentModule = new Module('ModComments');
@@ -82,8 +106,17 @@ class Record
 
     public function createComment($commentcontent) {
         Client::getInstance()->request()->
-                post('records/' . $this->crmid . '/comments', array(
-                    'comment' => $commentcontent
+        post('records/' . $this->crmid . '/comments', array(
+            'comment' => $commentcontent
+        ));
+
+    }
+
+    public function createPublicComment($commentcontent) {
+        Client::getInstance()->request()->
+        post('records/' . $this->crmid . '/comments', array(
+            'is_private' => 0,
+            'comment' => $commentcontent,
         ));
 
     }
@@ -103,5 +136,35 @@ class Record
         }
 
         return null;
+    }
+
+    public function getRelatedRecords($relatedModule, $relationId = 0, $fields = array()) {
+        if(is_array($relationId)) {
+            $fields = $relationId;
+            $relationId = 0;
+        }
+
+        if(empty($relationId)) {
+            $url = sprintf('records/relations/%s/%d/%s',
+                $this->module->getModuleName(),
+                $this->getId(),
+                $relatedModule
+            );
+        } else {
+            $url = sprintf(
+                'records/relations/%s/%d/%s/%d',
+                $this->module->getModuleName(),
+                $this->getId(), $relatedModule,
+                $relationId
+            );
+        }
+
+        $response = Client::getInstance()->request()->get($url, array('fields' => $fields));
+
+        return $response;
+    }
+
+    public function setAccessBridge($accessBridgeCrmId) {
+        $this->accessBridgeId = intval($accessBridgeCrmId);
     }
 }

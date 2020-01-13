@@ -29,6 +29,12 @@ class Client
      */
     private static $instance = null;
 
+    private $customerMode = false;
+
+    private $fallbackCustomerEmail = null;
+    private $fallbackCustomerKey = null;
+    private $changeCustomerTokenCallback = null;
+
     public static function connect($vtigerURL) {
         self::$instance = new self($vtigerURL);
 
@@ -42,6 +48,7 @@ class Client
         return self::$instance;
     }
 
+
     /**
      * Client constructor.
      *
@@ -49,6 +56,7 @@ class Client
      */
     private function __construct($VtigerURL) {
         $this->_Request = new Request($VtigerURL);
+        $this->_Request->setClient($this);
     }
 
     public function setLogintoken($token) {
@@ -78,6 +86,37 @@ class Client
 
     public function enableCustomerMode($customerToken) {
         $this->_Request->enableCustomerMode($customerToken);
+        $this->customerMode = true;
+    }
+
+    public function isCustomerMode() {
+        return $this->customerMode === true;
+    }
+
+    public function setChangeCustomerTokenCallback($callback) {
+        if(is_callable($callback)) {
+            $this->changeCustomerTokenCallback = $callback;
+        }
+    }
+
+    public function setFallbackCustomerLoginbyKey($customerEmail, $customerKey) {
+        $this->fallbackCustomerEmail = $customerEmail;
+        $this->fallbackCustomerKey = $customerKey;
+    }
+    public function haveFallbackCustomerCredentials() {
+        return !empty($this->fallbackCustomerEmail);
+    }
+
+    public function doFallbackCustomerLogin() {
+        if(!empty($this->fallbackCustomerKey)) {
+            $token = $this->loginCustomerByKey($this->fallbackCustomerEmail, $this->fallbackCustomerKey);
+
+            if($this->changeCustomerTokenCallback !== null) {
+                call_user_func($this->changeCustomerTokenCallback, $token);
+            }
+
+            return $token;
+        }
     }
 
     public function loginCustomer($usernameEmail, $password) {
@@ -102,7 +141,6 @@ class Client
                 'key' => $customerKey
             )
         );
-        var_dump($response);
 
         return $response['token'];
     }
@@ -115,15 +153,15 @@ class Client
      * @return Request
      */
     public function request() {
+        if(empty($this->_Request)) {
+            throw new \Exception('API Client not initialized!');
+        }
+
         return $this->_Request;
     }
 
-    public function restrictContactsMode($contactId) {
-        $this->_Request->setViewMode('Contacts', $contactId);
-    }
-
-    public function restrictAccountsMode($accountId) {
-        $this->_Request->setViewMode('Accounts', $accountId);
+    public function enableUUIDMode() {
+        $this->_Request->enableUUIDMode();
     }
 
 }

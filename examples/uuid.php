@@ -7,6 +7,8 @@ error_reporting(-1);
 
 //$customerToken = 'adb0f550e4983daea66b276869289b0876cc9b73';
 
+$client->enableUUIDMode();
+
 if(defined('CUSTOMERPORTALTOKEN') === false) {
     $customerToken = $client->loginCustomerByKey('ich@stefanwarnat.de', 'CPKEY');
     echo '<p>Customerportal Token: '.$customerToken.'</p>';

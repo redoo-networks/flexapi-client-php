@@ -12,7 +12,13 @@ class Module
     }
 
     public function getRecord($crmid) {
-        return new Record($this, $crmid);
+
+        if($this->moduleName !== 'Documents') {
+            return new Record($this, $crmid);
+        } else {
+            return new Document($this, $crmid);
+        }
+
     }
 
     public function getModuleName() {
