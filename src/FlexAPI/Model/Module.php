@@ -30,9 +30,11 @@ class Module
             'fields' => $fields,
         );
 
-        Client::getInstance()
+        $response = Client::getInstance()
             ->request()
             ->post('records/create/' . $this->getModuleName(), $params);
+
+        return new Record($this, $response['id']);
     }
 
     public function getFields($view = 'DetailView') {
