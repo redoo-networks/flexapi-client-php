@@ -145,14 +145,14 @@ class Record
         }
 
         if(empty($relationId)) {
-            $url = sprintf('records/relations/%s/%d/%s',
+            $url = sprintf('records/relations/%s/%s/%s',
                 $this->module->getModuleName(),
                 $this->getId(),
                 $relatedModule
             );
         } else {
             $url = sprintf(
-                'records/relations/%s/%d/%s/%d',
+                'records/relations/%s/%s/%s/%d',
                 $this->module->getModuleName(),
                 $this->getId(), $relatedModule,
                 $relationId
@@ -166,5 +166,28 @@ class Record
 
     public function setAccessBridge($accessBridgeCrmId) {
         $this->accessBridgeId = intval($accessBridgeCrmId);
+    }
+
+    public function createCustomerComment($commentcontent) {
+        $params = array(
+            'is_private' => 0,
+            'current_customer_author' => true,
+            'comment' => $commentcontent,
+        );
+
+        Client::getInstance()
+            ->request()
+            ->post('records/' . $this->crmid . '/comments', $params);
+
+    }
+
+    public function update($fields) {
+        $params = array(
+            'fields' => $fields,
+        );
+
+        Client::getInstance()
+            ->request()
+            ->post('records/' . $this->module->getModuleName() . '/' . $this->getId(), $params);
     }
 }

@@ -18,7 +18,7 @@ class Document extends Record
             Client::getInstance()->request()->get(
                'documents/' . $this->crmid . '/content',
                 $params,
-                trie
+                true
             )
         );
 

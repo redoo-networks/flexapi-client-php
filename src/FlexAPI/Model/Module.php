@@ -25,6 +25,16 @@ class Module
         return $this->moduleName;
     }
 
+    public function createRecord($fields) {
+        $params = array(
+            'fields' => $fields,
+        );
+
+        Client::getInstance()
+            ->request()
+            ->post('records/create/' . $this->getModuleName(), $params);
+    }
+
     public function getFields($view = 'DetailView') {
         $fields = Client::getInstance()->request()->get('fields/get/' . $this->getModuleName() . '/' . $view);
 

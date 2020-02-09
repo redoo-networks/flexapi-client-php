@@ -25,36 +25,39 @@ $client->setChangeCustomerTokenCallback(function($newToken) {
     echo '<p>Old token expired! New Token: '.$newToken.'</p>';
 });
 
-$modulObj = new \FlexAPI\Model\Module('Contacts');
-$record = $modulObj->getRecord(34);
-var_dump($record->getData());
-try {
-    $record = $modulObj->getRecord(35);
-    var_dump($record->getData());
-} catch (\Exception $exp) {
-    echo 'ok';
-}
+//$modulObj = new \FlexAPI\Model\Module('Contacts');
+//$record = $modulObj->getRecord(34);
+//var_dump($record->getData());
+//try {
+//    $record = $modulObj->getRecord(35);
+//    var_dump($record->getData());
+//} catch (\Exception $exp) {
+//    echo 'ok';
+//}
+//
+//$modulObj = new \FlexAPI\Model\Module('HelpDesk');
+//$record = $modulObj->getRecord(33);
+//$relatedRecords = $record->getRelatedRecords('Documents', array('filename', 'filesize'));
+//
+//$documentModuleObj = new \FlexAPI\Model\Module('Documents');
+//$arrayKeys = array_keys($relatedRecords['records']);
+//if(empty($arrayKeys)) {
+//    echo 'no Documents attached';
+//} else {
+//    /** @var \FlexAPI\Model\Document $record */
+//    $record = $documentModuleObj->getRecord($arrayKeys[0]);
+//    $record->setAccessBridge(33);
+//
+//    $documentData = $record->getData();
+//
+////    $record->saveFile(tempnam(sys_get_temp_dir(), 'dl'));
+//}
+////var_dump($relatedRecords);
 
+//exit();
+
+// Search Results
 $modulObj = new \FlexAPI\Model\Module('HelpDesk');
-$record = $modulObj->getRecord(33);
-$relatedRecords = $record->getRelatedRecords('Documents', array('filename', 'filesize'));
-
-$documentModuleObj = new \FlexAPI\Model\Module('Documents');
-$arrayKeys = array_keys($relatedRecords['records']);
-if(empty($arrayKeys)) {
-    echo 'no Documents attached';
-} else {
-    /** @var \FlexAPI\Model\Document $record */
-    $record = $documentModuleObj->getRecord($arrayKeys[0]);
-    $record->setAccessBridge(33);
-
-    $documentData = $record->getData();
-
-    $record->saveFile(tempnam(sys_get_temp_dir(), 'dl'));
-}
-//var_dump($relatedRecords);
-
-exit();
 $listView = new \FlexAPI\Operations\AdvancedSearch($modulObj);
 $listView->setPagesize(10);
 $listView->setFields(['ticket_title']);

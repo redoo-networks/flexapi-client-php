@@ -5,4 +5,4 @@ define('API_USERNAME', 'admin');
 define('API_PASSWORD', 'admin');
 define('LOGINTOKEN', '1c964e0b3b0f34aa0b92f1fb911003d9f4c1a45ad717821ce6a5656527c76965');
 
-//define('CUSTOMERPORTALTOKEN', '70f6870cbdf53984c8bf39cc259c1bb9887d5aab');
+define('CUSTOMERPORTALTOKEN', '5cdd43b83b5e35319325c1d3c7755c60d40f7cfc');
