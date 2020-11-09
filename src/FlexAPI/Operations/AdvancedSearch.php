@@ -85,7 +85,7 @@ class AdvancedSearch implements Search
         $resultModel->setTotalCount($response['total']);
 
         foreach($response['entries'] as $crmid => $entry) {
-            $record = new Record($this->module, $crmid);
+            $record = new Record($this->module, $entry['crmid']);
             $record->initData($entry);
 
             $resultModel->addRecord($record);
