@@ -1,6 +1,9 @@
 # Changelog
 
 
+## 0.7.0
+  - **[NEW]** Implementation of ListViewStructure
+  
 ## 0.6.0
   - **[NEW]** Implementation of create Record
   - **[Example]** of create Tickets in Customer Mode
