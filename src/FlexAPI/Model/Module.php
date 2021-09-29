@@ -37,6 +37,20 @@ class Module
         return new Record($this, $response['id']);
     }
 
+    public function createInventoryRecord($fields, $products, $groupTaxes) {
+        $params = array(
+            'fields' => $fields,
+            'products' => $products,
+            'group_taxes' => $groupTaxes
+        );
+
+        $response = Client::getInstance()
+            ->request()
+            ->post('records/create_inventory/' . $this->getModuleName(), $params);
+
+        return new Record($this, $response['id']);
+    }
+
     public function getFields($view = 'DetailView') {
         $fields = Client::getInstance()->request()->get('fields/get/' . $this->getModuleName() . '/' . $view);
 

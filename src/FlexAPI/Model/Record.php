@@ -190,4 +190,19 @@ class Record
             ->request()
             ->post('records/' . $this->module->getModuleName() . '/' . $this->getId(), $params);
     }
+
+    public function updateInventoryRecord($fields, $products, $groupTaxes) {
+        $params = array(
+            'fields' => $fields,
+            'products' => $products,
+            'group_taxes' => $groupTaxes
+        );
+
+        $response = Client::getInstance()
+            ->request()
+            ->post('records/update_inventory/' . $this->module->getModuleName() . '/' . $this->getId(), $params);
+
+        return new Record($this, $response['id']);
+    }
+
 }
