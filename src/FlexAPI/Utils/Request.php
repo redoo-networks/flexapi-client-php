@@ -6,7 +6,7 @@ use FlexAPI\Client;
 class Request
 {
     private $_VtigerURL = array();
-    private $DEBUG = true;
+    private $DEBUG = false;
     private $_LoginToken = null;
 
     private $customerToken = null;
