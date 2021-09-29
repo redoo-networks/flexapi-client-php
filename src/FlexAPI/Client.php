@@ -36,7 +36,9 @@ class Client
     private $changeCustomerTokenCallback = null;
 
     public static function connect($vtigerURL) {
-        self::$instance = new self($vtigerURL);
+        if(empty(self::$instance)) {
+            self::$instance = new self($vtigerURL);
+        }
 
         return self::$instance;
     }
